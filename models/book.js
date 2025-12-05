@@ -29,6 +29,7 @@ const bookSchema = new mongoose.Schema(
       max: 5,
     },
     ownerList: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    lenderList: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     genre: { type: String },
     description: { type: String },
     coverImage: { type: String },
