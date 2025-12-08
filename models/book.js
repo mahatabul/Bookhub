@@ -45,6 +45,8 @@ const bookSchema = new mongoose.Schema(
     rentPrice: {
       type: Number,
       default: 0,
+      max: 4000,
+      min: 0,
     },
     rentalDurationdays: {
       type: Number,
