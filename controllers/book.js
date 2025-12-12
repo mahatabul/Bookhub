@@ -30,12 +30,30 @@ const getBookById = async (req, res) => {
 
   res.status(StatusCodes.OK).json({ book });
 };
-const getBookbyName = async (req, res) => {
-  const name = req.body;
-  const books = await Book.find({ name: name });
 
-  res.status(StatusCodes.OK).json({ books, count: book.length });
+const getBookbyName = async (req, res) => {
+  try {
+    const { name } = req.query;
+
+    if (!name) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "Please provide a search query" });
+    }
+
+    const books = await Book.find({
+      title: { $regex: name, $options: "i" },
+    }).limit(30);
+
+    return res.status(StatusCodes.OK).json({ books, count: books.length });
+  } catch (err) {
+    console.error("SEARCH ERROR:", err);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "Search failed", error: err.message });
+  }
 };
+
 
 const getsortBookbyprice = async (req, res) => {
   const low = Number(req.params.lowprice) || 0;

@@ -20,8 +20,9 @@ const {
 } = require("../controllers/book");
 
 router.get("/all", getallBooks);
-router.get("/:id", getBookById);
 router.get("/search", getBookbyName);
+router.get("/:id", getBookById);
+
 
 router.get("/sort/:order", sortByPrice);
 

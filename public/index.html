@@ -155,9 +155,14 @@
 
       .btn-primary:hover {
         transform: translateY(-3px) scale(1.05); /* slightly bigger and lifted */
-  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5), 0 4px 10px rgba(99, 102, 241, 0.3); /* deeper glow */
-  background: linear-gradient(135deg, #637df1, #4f46e5); /* subtle gradient */
-  color: white;
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5),
+          0 4px 10px rgba(99, 102, 241, 0.3); /* deeper glow */
+        background: linear-gradient(
+          135deg,
+          #637df1,
+          #4f46e5
+        ); /* subtle gradient */
+        color: white;
       }
 
       .btn-secondary {
@@ -1098,10 +1103,21 @@
           const res = await fetch(
             `${API_BASE}/books/search?name=${encodeURIComponent(query)}`
           );
+
+          if (!res.ok) {
+            console.error("Search failed with status:", res.status);
+            const errorText = await res.text();
+            console.error("Error response:", errorText);
+            alert("Search failed. Check console for details.");
+            return;
+          }
+
           const data = await res.json();
-          displayBooks(data.books || data, "homeGrid");
+          console.log("Search response:", data);
+          displayBooks(data.books || [], "homeGrid");
         } catch (err) {
           console.error("Error searching books:", err);
+          alert("Network error while searching");
         }
       }
 
