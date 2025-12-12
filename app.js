@@ -12,11 +12,14 @@ const bookRoutes = require("./routes/book");
 app.use(express.json());
 app.use(cors());
 
-// routes
-app.use("api/v1/users", userRoutes);
-app.use("api/v1/books", bookRoutes);
-// middleware
+// Serve static files from public folder
+app.use(express.static('public'));
 
+// API routes
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/books", bookRoutes);
+
+// Middleware
 app.use(errorhandler);
 app.use(notFoundmiddleware);
 

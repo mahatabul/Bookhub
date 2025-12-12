@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookHub - Rent & Share Books</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --danger: #ef4444;
+        --dark: #1e293b;
+        --light: #f8fafc;
+        --border: #e2e8f0;
+        --text: #334155;
+        --text-light: #64748b;
+      }
+
+      [data-theme="dark"] {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --danger: #ef4444;
+        --dark: #f8fafc;
+        --light: #1e293b;
+        --border: #334155;
+        --text: #f6f6f7;
+        --text-light: #94a3b8;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: var(--text);
+        transition: background 0.3s ease;
+      }
+
+      [data-theme="dark"] body {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      }
+
+      .navbar {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        transition: background 0.3s ease;
+      }
+
+      [data-theme="dark"] .navbar {
+        background: #1e293b;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary);
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .logo:hover {
+        transform: scale(1.05);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .nav-links a,
+      .nav-links button {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+        transition: color 0.3s;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .nav-links a:hover,
+      .nav-links button:hover {
+        color: var(--primary);
+      }
+      .nav-links .btn-primary {
+        background: #637df1; /* your purple */
+        color: white;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 0.75rem 1.8rem;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .nav-links .btn-primary:hover {
+        transform: translateY(-3px) scale(1.05); /* slightly bigger and lifted */
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5),
+          0 4px 10px rgba(99, 102, 241, 0.3); /* deeper glow */
+        background: linear-gradient(
+          135deg,
+          #637df1,
+          #4f46e5
+        ); /* subtle gradient */
+        color: white;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background: #637df1; /* always purple */
+        color: white; /* always white text */
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 0.75rem 1.8rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s; /* only hover movement effect */
+        border: none;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px) scale(1.05); /* slightly bigger and lifted */
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5), 0 4px 10px rgba(99, 102, 241, 0.3); /* deeper glow */
+  background: linear-gradient(135deg, #637df1, #4f46e5); /* subtle gradient */
+  color: white;
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .hero {
+        text-align: center;
+        color: white;
+        padding: 4rem 2rem;
+      }
+
+      .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+      }
+
+      .search-bar {
+        max-width: 600px;
+        margin: 2rem auto;
+        display: flex;
+        gap: 1rem;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .search-bar input {
+        flex: 1;
+        border: none;
+        padding: 0.75rem;
+        font-size: 1rem;
+        outline: none;
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        transition: background 0.3s ease;
+      }
+
+      [data-theme="dark"] .card {
+        background: #1e293b;
+      }
+
+      .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .book-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+        cursor: pointer;
+      }
+
+      [data-theme="dark"] .book-card {
+        background: #1e293b;
+      }
+
+      .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .book-cover {
+        width: 100%;
+        height: 300px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+      }
+
+      .book-info {
+        padding: 1.5rem;
+      }
+
+      .book-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+      }
+
+      .book-author {
+        color: var(--text-light);
+        margin-bottom: 1rem;
+      }
+
+      .book-price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--success);
+        margin-bottom: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--border);
+      }
+
+      .tab {
+        padding: 1rem 2rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-light);
+        position: relative;
+        transition: color 0.3s;
+      }
+
+      .tab.active {
+        color: var(--primary);
+      }
+
+      .tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--primary);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .filter-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .filter-bar select,
+      .filter-bar input {
+        padding: 0.75rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        opacity: 0.9;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        transition: background 0.3s ease;
+      }
+
+      [data-theme="dark"] .modal-content {
+        background: #1e293b;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-header h2 {
+        color: var(--dark);
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+      }
+
+      .user-menu {
+        position: relative;
+      }
+
+      .user-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--light);
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text);
+        transition: all 0.3s;
+      }
+
+      .user-button:hover {
+        background: var(--border);
+      }
+
+      .dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 0.5rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        min-width: 200px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s;
+      }
+
+      [data-theme="dark"] .dropdown {
+        background: #1e293b;
+        border: 1px solid var(--border);
+      }
+
+      .dropdown.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text);
+      }
+
+      .dropdown-item:hover {
+        background: var(--light);
+      }
+
+      .dropdown-item:first-child {
+        border-radius: 8px 8px 0 0;
+      }
+
+      .dropdown-item:last-child {
+        border-radius: 0 0 8px 8px;
+      }
+
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .switch {
+        position: relative;
+        width: 50px;
+        height: 24px;
+        background: #cbd5e1;
+        border-radius: 24px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .switch.active {
+        background: var(--primary);
+      }
+
+      .switch-thumb {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.3s;
+      }
+
+      .switch.active .switch-thumb {
+        transform: translateX(26px);
+      }
+
+      .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+
+      .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
+      }
+
+      .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+      }
+
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2rem;
+        }
+
+        .navbar {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .nav-links {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .search-bar {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo" onclick="goHome()">
+        <span>📚</span>
+        <span>BookHub</span>
+      </div>
+      <div class="nav-links" id="navLinks">
+        <a
+          href="#"
+          onclick="showSection('mybooks')"
+          id="mybooksLink"
+          class="hidden"
+          >My Books</a
+        >
+        <a
+          href="#"
+          onclick="showSection('upload')"
+          id="uploadLink"
+          class="hidden"
+          >Upload Book</a
+        >
+        <button onclick="openModal('loginModal')" id="loginBtn">Login</button>
+        <button
+          class="btn btn-primary"
+          onclick="openModal('registerModal')"
+          id="registerBtn"
+        >
+          Sign Up
+        </button>
+
+        <!-- User Menu -->
+        <div class="user-menu hidden" id="userMenu">
+          <button class="user-button" onclick="toggleDropdown()">
+            <span>👤</span>
+            <span id="userName">User</span>
+            <span>▼</span>
+          </button>
+          <div class="dropdown" id="userDropdown">
+            <div class="dropdown-item theme-toggle">
+              <span>🌙 Dark Mode</span>
+              <div class="switch" id="themeSwitch" onclick="toggleTheme(event)">
+                <div class="switch-thumb"></div>
+              </div>
+            </div>
+            <div class="dropdown-item" onclick="logout()">
+              <span>🚪</span>
+              <span>Logout</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div id="home" class="section">
+      <div class="hero">
+        <h1>📖 Share Books, Share Knowledge</h1>
+        <p>
+          Rent books from others or lend your books to earn. Join our community
+          of book lovers!
+        </p>
+      </div>
+      <div class="container">
+        <div class="card">
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              margin-bottom: 1rem;
+              flex-wrap: wrap;
+            "
+          >
+            <input
+              type="text"
+              id="homeSearch"
+              placeholder="Search for books..."
+              style="
+                flex: 1;
+                min-width: 200px;
+                padding: 0.75rem;
+                border: 2px solid var(--border);
+                border-radius: 8px;
+                font-size: 1rem;
+              "
+            />
+            <button class="btn btn-primary" onclick="searchBooks()">
+              🔍 Search
+            </button>
+            <button class="btn btn-secondary" onclick="clearSearch()">
+              Clear
+            </button>
+          </div>
+          <div class="filter-bar">
+            <select id="sortOrder" onchange="applySorting()">
+              <option value="">Sort by Price</option>
+              <option value="1">Price: Low to High</option>
+              <option value="-1">Price: High to Low</option>
+            </select>
+            <input
+              type="number"
+              id="minPrice"
+              placeholder="Min Price"
+              style="width: 150px"
+            />
+            <input
+              type="number"
+              id="maxPrice"
+              placeholder="Max Price"
+              style="width: 150px"
+            />
+            <button class="btn btn-primary" onclick="filterByPrice()">
+              Apply Filter
+            </button>
+          </div>
+        </div>
+        <div class="books-grid" id="homeGrid"></div>
+      </div>
+    </div>
+
+    <div id="browse" class="section hidden">
+      <div class="container">
+        <h2 style="color: white; margin-bottom: 2rem">Browse Books</h2>
+        <div class="card">
+          <div class="filter-bar">
+            <select id="sortOrder" onchange="applySorting()">
+              <option value="">Sort by Price</option>
+              <option value="asc">Price: Low to High</option>
+              <option value="desc">Price: High to Low</option>
+            </select>
+            <input
+              type="number"
+              id="minPrice"
+              placeholder="Min Price"
+              style="width: 150px"
+            />
+            <input
+              type="number"
+              id="maxPrice"
+              placeholder="Max Price"
+              style="width: 150px"
+            />
+            <button class="btn btn-primary" onclick="filterByPrice()">
+              Apply Filter
+            </button>
+          </div>
+        </div>
+        <div class="books-grid" id="booksGrid"></div>
+      </div>
+    </div>
+
+    <div id="mybooks" class="section hidden">
+      <div class="container">
+        <h2 style="color: white; margin-bottom: 2rem">My Books</h2>
+        <div class="card">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('owned')">
+              Owned Books
+            </button>
+            <button class="tab" onclick="switchTab('lent')">Lent Books</button>
+            <button class="tab" onclick="switchTab('rented')">
+              Rented Books
+            </button>
+          </div>
+          <div id="ownedBooks" class="tab-content">
+            <div class="books-grid" id="ownedGrid"></div>
+          </div>
+          <div id="lentBooks" class="tab-content hidden">
+            <div class="books-grid" id="lentGrid"></div>
+          </div>
+          <div id="rentedBooks" class="tab-content hidden">
+            <div class="books-grid" id="rentedGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="upload" class="section hidden">
+      <div class="container">
+        <h2 style="color: white; margin-bottom: 2rem">Upload a Book</h2>
+        <div class="card">
+          <form onsubmit="uploadBook(event)">
+            <div class="form-group">
+              <label>Book Title *</label>
+              <input type="text" id="bookTitle" required />
+            </div>
+            <div class="form-group">
+              <label>Author *</label>
+              <input type="text" id="bookAuthor" required />
+            </div>
+            <div class="form-group">
+              <label>Edition *</label>
+              <input type="text" id="bookEdition" required />
+            </div>
+            <div class="form-group">
+              <label>Publication</label>
+              <input type="text" id="bookPublication" />
+            </div>
+            <div class="form-group">
+              <label>Year</label>
+              <input type="number" id="bookYear" min="1900" max="2025" />
+            </div>
+            <div class="form-group">
+              <label>Genre *</label>
+              <input type="text" id="bookGenre" required />
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="bookDescription" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Cover Image URL</label>
+              <input
+                type="url"
+                id="bookCoverImage"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+            <div class="form-group">
+              <label>Rental Price (per day) *</label>
+              <input type="number" id="bookPrice" step="0.01" required />
+            </div>
+            <button type="submit" class="btn btn-primary">
+              📤 Upload Book
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Login</h2>
+          <button class="close-btn" onclick="closeModal('loginModal')">
+            ×
+          </button>
+        </div>
+        <div id="loginAlert"></div>
+        <form onsubmit="login(event)">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="loginEmail" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Sign Up</h2>
+          <button class="close-btn" onclick="closeModal('registerModal')">
+            ×
+          </button>
+        </div>
+        <div id="registerAlert"></div>
+        <form onsubmit="register(event)">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="registerName" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="registerEmail" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="registerPassword" required />
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="registerPhone" required />
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <textarea id="registerAddress" rows="2" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Sign Up
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Book Detail Modal -->
+    <div id="bookDetailModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="detailTitle"></h2>
+          <button class="close-btn" onclick="closeModal('bookDetailModal')">
+            ×
+          </button>
+        </div>
+        <div id="bookDetailContent"></div>
+      </div>
+    </div>
+
+    <script>
+      function goHome() {
+        showSection("home");
+        window.scrollTo(0, 0);
+      }
+      // --------------------------
+      // Toggle user dropdown
+      // --------------------------
+      function toggleDropdown() {
+        const dropdown = document.getElementById("userDropdown");
+        dropdown.classList.toggle("active");
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", (e) => {
+        const menu = document.getElementById("userMenu");
+        if (!menu.contains(e.target)) {
+          document.getElementById("userDropdown").classList.remove("active");
+        }
+      });
+
+      // --------------------------
+      // Dark / Light Theme Switch
+      // --------------------------
+      function toggleTheme(event) {
+        event.stopPropagation();
+
+        const root = document.documentElement;
+        const switchBtn = document.getElementById("themeSwitch");
+
+        const isDark = root.getAttribute("data-theme") === "dark";
+
+        if (isDark) {
+          root.removeAttribute("data-theme");
+          switchBtn.classList.remove("active");
+          localStorage.setItem("theme", "light");
+        } else {
+          root.setAttribute("data-theme", "dark");
+          switchBtn.classList.add("active");
+          localStorage.setItem("theme", "dark");
+        }
+      }
+
+      // Load saved theme on page load
+      window.onload = () => {
+        const savedTheme = localStorage.getItem("theme");
+        const switchBtn = document.getElementById("themeSwitch");
+
+        if (savedTheme === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+          switchBtn.classList.add("active");
+        }
+
+        // YOU MUST ALSO LOAD USER INFO HERE
+        checkLoginStatus();
+      };
+
+      // --------------------------
+      // Logout
+      // --------------------------
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        // Hide user menu links
+        document.getElementById("userMenu").classList.add("hidden");
+        document.getElementById("mybooksLink").classList.add("hidden");
+        document.getElementById("uploadLink").classList.add("hidden");
+
+        // Show login/register
+        document.getElementById("loginBtn").classList.remove("hidden");
+        document.getElementById("registerBtn").classList.remove("hidden");
+
+        showSection("home");
+      }
+      const API_BASE = "http://localhost:5000/api/v1"; // Change this to your API URL
+      let authToken = localStorage.getItem("token");
+
+      function showAlert(elementId, message, type) {
+        const alert = document.getElementById(elementId);
+        alert.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        setTimeout(() => (alert.innerHTML = ""), 3000);
+      }
+
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      function showSection(sectionId) {
+        document
+          .querySelectorAll(".section")
+          .forEach((s) => s.classList.add("hidden"));
+        document.getElementById(sectionId).classList.remove("hidden");
+      }
+
+      function updateNav() {
+        const isLoggedIn = !!authToken;
+        document
+          .getElementById("loginBtn")
+          .classList.toggle("hidden", isLoggedIn);
+        document
+          .getElementById("registerBtn")
+          .classList.toggle("hidden", isLoggedIn);
+        document
+          .getElementById("userMenu")
+          .classList.toggle("hidden", !isLoggedIn);
+        document
+          .getElementById("mybooksLink")
+          .classList.toggle("hidden", !isLoggedIn);
+        document
+          .getElementById("uploadLink")
+          .classList.toggle("hidden", !isLoggedIn);
+
+        if (isLoggedIn && currentUser) {
+          document.getElementById("userName").textContent =
+            currentUser.name || "User";
+        }
+      }
+
+      async function register(e) {
+        e.preventDefault();
+        try {
+          const res = await fetch(`${API_BASE}/users/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: document.getElementById("registerName").value,
+              email: document.getElementById("registerEmail").value,
+              password: document.getElementById("registerPassword").value,
+              phone: document.getElementById("registerPhone").value,
+              address: document.getElementById("registerAddress").value,
+            }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            showAlert("registerAlert", "Registration successful!", "success");
+            setTimeout(() => {
+              closeModal("registerModal");
+              openModal("loginModal");
+            }, 1500);
+          } else {
+            showAlert(
+              "registerAlert",
+              data.msg || "Registration failed",
+              "error"
+            );
+          }
+        } catch (err) {
+          showAlert("registerAlert", "Network error", "error");
+        }
+      }
+
+      async function login(e) {
+        e.preventDefault();
+        try {
+          const res = await fetch(`${API_BASE}/users/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: document.getElementById("loginEmail").value,
+              password: document.getElementById("loginPassword").value,
+            }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            authToken = data.token;
+            currentUser = data.user;
+            localStorage.setItem("token", authToken);
+            localStorage.setItem("user", JSON.stringify(currentUser));
+            updateNav();
+            closeModal("loginModal");
+            showSection("home");
+            loadAllBooks();
+          } else {
+            showAlert("loginAlert", data.msg || "Login failed", "error");
+          }
+        } catch (err) {
+          showAlert("loginAlert", "Network error", "error");
+        }
+      }
+
+      async function loadAllBooks() {
+        try {
+          const res = await fetch(`${API_BASE}/books/all`);
+          const data = await res.json();
+          displayBooks(data.books || data, "homeGrid");
+        } catch (err) {
+          console.error("Error loading books:", err);
+        }
+      }
+
+      async function searchBooks() {
+        const query = document.getElementById("homeSearch").value.trim();
+        if (!query) {
+          loadAllBooks();
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            `${API_BASE}/books/search?name=${encodeURIComponent(query)}`
+          );
+          const data = await res.json();
+          displayBooks(data.books || data, "homeGrid");
+        } catch (err) {
+          console.error("Error searching books:", err);
+        }
+      }
+
+      function clearSearch() {
+        document.getElementById("homeSearch").value = "";
+        document.getElementById("sortOrder").value = "";
+        document.getElementById("minPrice").value = "";
+        document.getElementById("maxPrice").value = "";
+        loadAllBooks();
+      }
+
+      async function applySorting() {
+        const order = document.getElementById("sortOrder").value;
+        if (!order) {
+          loadAllBooks();
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_BASE}/books/sort/${order}`);
+          const data = await res.json();
+          displayBooks(data.books || data, "homeGrid");
+        } catch (err) {
+          console.error("Error sorting books:", err);
+        }
+      }
+
+      async function filterByPrice() {
+        const min = document.getElementById("minPrice").value;
+        const max = document.getElementById("maxPrice").value;
+
+        if (!min || !max) {
+          alert("Please enter both min and max prices");
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_BASE}/books/price/${min}/${max}`);
+          const data = await res.json();
+          displayBooks(data.books || data, "homeGrid");
+        } catch (err) {
+          console.error("Error filtering books:", err);
+        }
+      }
+
+      let allBooksCache = {};
+
+      function displayBooks(books, gridId) {
+        const grid = document.getElementById(gridId);
+        if (!books || books.length === 0) {
+          grid.innerHTML =
+            '<p style="text-align: center; color: var(--text-light);">No books found</p>';
+          return;
+        }
+
+        // Cache books for later retrieval
+        books.forEach((book) => {
+          allBooksCache[book._id] = book;
+        });
+
+        grid.innerHTML = books
+          .map(
+            (book) => `
+                <div class="book-card" onclick="showBookDetail('${book._id}')">
+                    <div class="book-cover">📕</div>
+                    <div class="book-info">
+                        <div class="book-title">${
+                          book.title || book.name || "Untitled"
+                        }</div>
+                        <div class="book-author">by ${
+                          book.author || "Unknown"
+                        }</div>
+                        <div class="book-price">${
+                          book.rentPrice || book.price || "0"
+                        }/day</div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="event.stopPropagation(); rentBook('${
+                          book._id
+                        }')">Rent Now</button>
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      async function showBookDetail(bookId) {
+        // First check cache
+        let book = allBooksCache[bookId];
+
+        // If not in cache, try to fetch
+        if (!book) {
+          try {
+            const res = await fetch(`${API_BASE}/books/${bookId}`);
+            const data = await res.json();
+            book = data.book || data;
+          } catch (err) {
+            console.error("Error loading book details:", err);
+            book = null;
+          }
+        }
+
+        if (!book) {
+          alert("Unable to load book details");
+          return;
+        }
+
+        document.getElementById("detailTitle").textContent =
+          book.title || book.name || "Untitled";
+        document.getElementById("bookDetailContent").innerHTML = `
+                <p><strong>Author:</strong> ${book.author || "Unknown"}</p>
+                <p><strong>Edition:</strong> ${book.edition || "N/A"}</p>
+                <p><strong>Publication:</strong> ${
+                  book.publication || "N/A"
+                }</p>
+                <p><strong>Year:</strong> ${book.year || "N/A"}</p>
+                <p><strong>Genre:</strong> ${book.genre || "N/A"}</p>
+                <p><strong>Price:</strong> ${
+                  book.rentPrice || book.price || "0"
+                }/day</p>
+                <p><strong>Description:</strong> ${
+                  book.description || "No description available"
+                }</p>
+            `;
+
+        openModal("bookDetailModal");
+      }
+
+      async function rentBook(bookId) {
+        if (!authToken) {
+          openModal("loginModal");
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_BASE}/books/${bookId}/rent`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (res.ok) {
+            alert("Book rented successfully!");
+          } else {
+            const data = await res.json();
+            alert(data.msg || "Failed to rent book");
+          }
+        } catch (err) {
+          alert("Network error");
+        }
+      }
+
+      async function uploadBook(e) {
+        e.preventDefault();
+
+        try {
+          const res = await fetch(`${API_BASE}/books/upload`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: document.getElementById("bookTitle").value,
+              author: document.getElementById("bookAuthor").value,
+              edition: document.getElementById("bookEdition").value,
+              publication: document.getElementById("bookPublication").value,
+              year: document.getElementById("bookYear").value,
+              genre: document.getElementById("bookGenre").value,
+              description: document.getElementById("bookDescription").value,
+              coverImage: document.getElementById("bookCoverImage").value,
+              rentPrice: document.getElementById("bookPrice").value,
+            }),
+          });
+
+          if (res.ok) {
+            alert("Book uploaded successfully!");
+            e.target.reset();
+            showSection("mybooks");
+            loadMyBooks("owned");
+          } else {
+            const data = await res.json();
+            alert(data.msg || "Failed to upload book");
+          }
+        } catch (err) {
+          alert("Network error");
+        }
+      }
+
+      function switchTab(tabName) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((c) => c.classList.add("hidden"));
+
+        event.target.classList.add("active");
+        document.getElementById(`${tabName}Books`).classList.remove("hidden");
+
+        loadMyBooks(tabName);
+      }
+
+      async function loadMyBooks(type) {
+        if (!authToken) return;
+
+        try {
+          const res = await fetch(`${API_BASE}/books/me/${type}`, {
+            headers: { Authorization: `Bearer ${authToken}` },
+          });
+          const data = await res.json();
+          displayBooks(data.books || data, `${type}Grid`);
+        } catch (err) {
+          console.error("Error loading books:", err);
+        }
+      }
+
+      updateNav();
+      if (authToken) {
+        loadAllBooks();
+      } else {
+        loadAllBooks();
+      }
+    </script>
+  </body>
+</html>

@@ -5,7 +5,8 @@ const {
   customerror,
 } = require("../errors/index");
 const { StatusCodes } = require("http-status-codes");
-const { User, Book } = require("../models/");
+const Book = require("../models/book");
+const User = require("../models/user");
 
 const getBook = async (req, res) => {
   const name = req.body;
@@ -19,7 +20,16 @@ const getallBooks = async (req, res) => {
 
   res.status(StatusCodes.OK).json({ books });
 };
+const getBookById = async (req, res) => {
+  const { id } = req.params;
+  const book = await Book.findById(id);
 
+  if (!book) {
+    return res.status(404).json({ msg: "Book not found" });
+  }
+
+  res.status(StatusCodes.OK).json({ book });
+};
 const getBookbyName = async (req, res) => {
   const name = req.body;
   const books = await Book.find({ name: name });
@@ -78,35 +88,33 @@ const getLentnumbers = async (req, res) => {
 const getOwnedbooks = async (req, res) => {
   const userId = req.user.userId;
 
-  const user = await User.findById(userId)
-    .populate("booksowns");
+  const user = await User.findById(userId).populate("booksowns");
 
   res.status(200).json({ count: user.booksowns.length, books: user.booksowns });
 };
 
-
 const getLentbooks = async (req, res) => {
   const userId = req.user.userId;
 
-  const user = await User.findById(userId)
-    .populate({
-      path: "bookslended",
-      populate: { path: "currentRenter", select: "name email" }
-    });
+  const user = await User.findById(userId).populate({
+    path: "bookslended",
+    populate: { path: "currentRenter", select: "name email" },
+  });
 
-  res.status(200).json({ count: user.bookslended.length, books: user.bookslended });
+  res
+    .status(200)
+    .json({ count: user.bookslended.length, books: user.bookslended });
 };
-
 
 const getRentedbooks = async (req, res) => {
   const userId = req.user.userId;
 
-  const user = await User.findById(userId)
-    .populate("booksRented");
+  const user = await User.findById(userId).populate("booksRented");
 
-  res.status(200).json({ count: user.booksRented.length, books: user.booksRented });
+  res
+    .status(200)
+    .json({ count: user.booksRented.length, books: user.booksRented });
 };
-
 
 const rentabook = async (req, res) => {
   const userId = req.user.userId;
@@ -186,6 +194,7 @@ const uploadabook = async (req, res) => {
 
 module.exports = {
   getBook,
+  getBookById,
   getBookbyName,
   getallBooks,
   getsortBookbyprice,
