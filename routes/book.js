@@ -26,7 +26,7 @@ router.get("/:id", getBookById);
 
 router.get("/sort/:order", sortByPrice);
 
-router.get("/price/:lowprice/:highprice", getsortBookbyprice);
+router.get("/price/:lowprice/:highprice/:order", getsortBookbyprice);
 
 router.get("/:id/owners", getOwnerlist);
 

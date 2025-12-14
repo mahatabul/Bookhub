@@ -54,15 +54,16 @@ const getBookbyName = async (req, res) => {
   }
 };
 
-
 const getsortBookbyprice = async (req, res) => {
   const low = Number(req.params.lowprice) || 0;
   const high = Number(req.params.highprice) || 4000;
+  const order = req.params.order;
+  const ascending = order == 1 ? 1 : -1;
 
   const books = await Book.find({
     rentPrice: { $gte: low, $lte: high },
   })
-    .sort({ rentPrice: 1 })
+    .sort({ rentPrice: ascending })
     .limit(30);
 
   res.status(StatusCodes.OK).json({ books });

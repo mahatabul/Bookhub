@@ -941,6 +941,18 @@
       }
 
       // Load saved theme on page load
+      // window.onload = () => {
+      //   const savedTheme = localStorage.getItem("theme");
+      //   const switchBtn = document.getElementById("themeSwitch");
+
+      //   if (savedTheme === "dark") {
+      //     document.documentElement.setAttribute("data-theme", "dark");
+      //     switchBtn.classList.add("active");
+      //   }
+
+      //   // YOU MUST ALSO LOAD USER INFO HERE
+      //   checkLoginStatus();
+      // };
       window.onload = () => {
         const savedTheme = localStorage.getItem("theme");
         const switchBtn = document.getElementById("themeSwitch");
@@ -950,30 +962,54 @@
           switchBtn.classList.add("active");
         }
 
-        // YOU MUST ALSO LOAD USER INFO HERE
-        checkLoginStatus();
+        // Load user info and update nav
+        updateNav();
+        loadAllBooks();
       };
 
       // --------------------------
       // Logout
       // --------------------------
+      // function logout() {
+      //   localStorage.removeItem("token");
+      //   localStorage.removeItem("user");
+
+      //   // Hide user menu links
+      //   document.getElementById("userMenu").classList.add("hidden");
+      //   document.getElementById("mybooksLink").classList.add("hidden");
+      //   document.getElementById("uploadLink").classList.add("hidden");
+
+      //   // Show login/register
+      //   document.getElementById("loginBtn").classList.remove("hidden");
+      //   document.getElementById("registerBtn").classList.remove("hidden");
+
+      //   showSection("home");
+      // }
+
       function logout() {
+        authToken = null;
+        currentUser = null;
         localStorage.removeItem("token");
         localStorage.removeItem("user");
 
-        // Hide user menu links
-        document.getElementById("userMenu").classList.add("hidden");
-        document.getElementById("mybooksLink").classList.add("hidden");
-        document.getElementById("uploadLink").classList.add("hidden");
-
-        // Show login/register
-        document.getElementById("loginBtn").classList.remove("hidden");
-        document.getElementById("registerBtn").classList.remove("hidden");
-
+        document.getElementById("userDropdown").classList.remove("active");
+        updateNav();
         showSection("home");
       }
       const API_BASE = "http://localhost:5000/api/v1"; // Change this to your API URL
       let authToken = localStorage.getItem("token");
+      let currentUser = null;
+
+      // Initialize user from localStorage
+      try {
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+          currentUser = JSON.parse(savedUser);
+        }
+      } catch (e) {
+        console.error("Error parsing user data:", e);
+        localStorage.removeItem("user");
+      }
 
       function showAlert(elementId, message, type) {
         const alert = document.getElementById(elementId);
@@ -1148,6 +1184,8 @@
       async function filterByPrice() {
         const min = document.getElementById("minPrice").value;
         const max = document.getElementById("maxPrice").value;
+        const sortOrder = document.getElementById("sortOrder").value;
+        const order = sortOrder === "desc" ? -1 : 1;
 
         if (!min || !max) {
           alert("Please enter both min and max prices");
@@ -1155,7 +1193,9 @@
         }
 
         try {
-          const res = await fetch(`${API_BASE}/books/price/${min}/${max}`);
+          const res = await fetch(
+            `${API_BASE}/books/price/${min}/${max}/${order}`
+          );
           const data = await res.json();
           displayBooks(data.books || data, "homeGrid");
         } catch (err) {
@@ -1167,7 +1207,14 @@
 
       function displayBooks(books, gridId) {
         const grid = document.getElementById(gridId);
-        if (!books || books.length === 0) {
+
+        // Handle case where books is not an array
+        if (!books || !Array.isArray(books)) {
+          grid.innerHTML =
+            '<p style="text-align: center; color: var(--text-light);">No books found</p>';
+          return;
+        }
+        if (books.length === 0) {
           grid.innerHTML =
             '<p style="text-align: center; color: var(--text-light);">No books found</p>';
           return;
