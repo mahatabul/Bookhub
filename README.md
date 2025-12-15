@@ -51,8 +51,8 @@ The goal was to understand how a real application handles:
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone <your-repo-url>
-cd <project-folder>
+git clone https://github.com/mahatabul/Bookhub.git
+cd Bookhub
 ```
 ### 2️⃣ Install dependencies
 ```bash
